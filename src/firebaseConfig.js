@@ -1,5 +1,5 @@
 const firebaseConfig = {
-  apiKey: "AIzaSyAy~75uUn5dTPoTzSGar1NHRKy9rEzMDFU", // BU ÖNEMLİ
+ apiKey: "AIzaSyAy~75uUn5dTPoTzSGar1NHRKy9rEzMDFU",
   authDomain: "evciai.firebaseapp.com",
   projectId: "evciai",
   storageBucket: "evciai.appspot.com",
