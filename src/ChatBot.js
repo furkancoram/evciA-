@@ -1,7 +1,21 @@
 // EvciAI - Firebase Google Login Entegreli Mobil Sohbet Uygulaması
 import React, { useState, useRef } from 'react';
-import { auth, provider } from './firebaseConfig';
-import { signInWithPopup } from 'firebase/auth';
+import { initializeApp } from "firebase/app";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+
+const firebaseConfig = {
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: "evciai-6ee17.firebaseapp.com",
+  projectId: "evciai-6ee17",
+  storageBucket: "evciai-6ee17.appspot.com",
+  messagingSenderId: "8963614199",
+  appId: "1:8963614199:web:3ab1e9cf92afeda3cabaf2",
+  measurementId: "G-Q4DLMYBKD0"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
 
 const EvciAI = () => {
   const [user, setUser] = useState(null);
