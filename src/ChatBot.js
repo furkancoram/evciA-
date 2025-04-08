@@ -1,7 +1,10 @@
-// EvciAI - Mobil uyumlu yapay zeka destekli sohbet (OpenAI GPT-3.5 ile)
+// EvciAI - Firebase Google Login Entegreli Mobil Sohbet Uygulaması
 import React, { useState, useRef } from 'react';
+import { auth, provider } from './firebaseConfig';
+import { signInWithPopup } from 'firebase/auth';
 
 const EvciAI = () => {
+  const [user, setUser] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -61,6 +64,15 @@ const EvciAI = () => {
     recognitionRef.current.start();
   };
 
+  const loginWithGoogle = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      setUser(result.user);
+    } catch (error) {
+      alert("Giriş başarısız: " + error.message);
+    }
+  };
+
   const themeStyles = {
     backgroundColor: darkMode ? '#1e1e1e' : '#f7f9fc',
     color: darkMode ? '#f7f9fc' : '#1e1e1e',
@@ -69,6 +81,17 @@ const EvciAI = () => {
     flexDirection: 'column',
     fontFamily: 'Arial, sans-serif'
   };
+
+  if (!user) {
+    return (
+      <div style={{ ...themeStyles, alignItems: 'center', justifyContent: 'center' }}>
+        <h2 style={{ marginBottom: 16 }}>EvciAI’ye Hoş Geldin 👋</h2>
+        <button onClick={loginWithGoogle} style={{ padding: '10px 20px', fontSize: 16, borderRadius: 8, backgroundColor: '#4285F4', color: '#fff', border: 'none' }}>
+          Google ile Giriş Yap
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div style={themeStyles}>
