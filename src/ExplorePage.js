@@ -10,7 +10,8 @@ import {
   updateDoc,
   doc,
   arrayUnion,
-  arrayRemove
+  arrayRemove,
+  addDoc
 } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
@@ -19,6 +20,7 @@ const auth = getAuth();
 
 const ExplorePage = () => {
   const [posts, setPosts] = useState([]);
+  const [commentInputs, setCommentInputs] = useState({});
   const user = auth.currentUser;
 
   useEffect(() => {
@@ -57,6 +59,22 @@ const ExplorePage = () => {
     }
   };
 
+  const handleCommentChange = (postId, value) => {
+    setCommentInputs(prev => ({ ...prev, [postId]: value }));
+  };
+
+  const handleCommentSubmit = async (postId) => {
+    const text = commentInputs[postId]?.trim();
+    if (!text || !user) return;
+    await addDoc(collection(db, 'posts', postId, 'comments'), {
+      text,
+      uid: user.uid,
+      username: user.displayName,
+      createdAt: new Date()
+    });
+    setCommentInputs(prev => ({ ...prev, [postId]: '' }));
+  };
+
   return (
     <div style={{ padding: 20 }}>
       <h2>📈 Gündemdekiler</h2>
@@ -73,6 +91,16 @@ const ExplorePage = () => {
             <button onClick={() => handleToggle(post, 'likes')}>❤️ {post.likes?.length || 0}</button>
             <button onClick={() => handleToggle(post, 'retweets')}>🔁 {post.retweets?.length || 0}</button>
             <button onClick={() => handleToggle(post, 'saved')}>📌 {post.saved?.length || 0}</button>
+          </div>
+
+          <div style={{ marginTop: 10 }}>
+            <input
+              value={commentInputs[post.id] || ''}
+              onChange={(e) => handleCommentChange(post.id, e.target.value)}
+              placeholder="Yorum yap..."
+              style={{ padding: 8, borderRadius: 6, width: '80%' }}
+            />
+            <button onClick={() => handleCommentSubmit(post.id)} style={{ marginLeft: 8, padding: '6px 12px' }}>Gönder</button>
           </div>
         </div>
       ))}
