@@ -26,7 +26,7 @@ const ChatBot = () => {
 
   const fetchOpenAIResponse = async (userInput) => {
     // Buraya API anahtarını doğrudan geçici olarak yazabilirsin (Render için .env yerine)
-    const apiKey = "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";
+    const apiKey = "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";
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
