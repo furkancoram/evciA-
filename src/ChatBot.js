@@ -19,7 +19,6 @@ const EvciAI = () => {
     try {
       const botMessage = await fetchOpenAIResponse(input);
       setMessages((prev) => [...prev, { sender: 'bot', text: botMessage }]);
-      speak(botMessage);
     } catch (error) {
       setMessages((prev) => [...prev, { sender: 'bot', text: `Bir hata oluştu: ${error.message}` }]);
     } finally {
@@ -39,7 +38,7 @@ const EvciAI = () => {
       body: JSON.stringify({
         model: "gpt-3.5-turbo",
         messages: [
-          { role: "system", content: "Sen EvciAI isimli, ev işleri ve tariflerde yardımcı olan bir asistansın." },
+          { role: "system", content: "Sen EvciAI adında, insanlarla doğal konuşmalar yapan bir yapay zeka sohbet asistanısın. Nazik, akıllı ve samimi konuşursun." },
           { role: "user", content: userInput }
         ]
       })
@@ -49,12 +48,6 @@ const EvciAI = () => {
     if (data.error) throw new Error(data.error.message);
     if (!data.choices || !data.choices[0]) throw new Error("Geçerli bir yanıt alınamadı.");
     return data.choices[0].message.content.trim();
-  };
-
-  const speak = (text) => {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'tr-TR';
-    speechSynthesis.speak(utterance);
   };
 
   const startListening = () => {
@@ -143,7 +136,7 @@ const EvciAI = () => {
           }}
         />
         <button onClick={handleSend} style={{ backgroundColor: '#0d6efd', color: '#fff', padding: '10px 18px', border: 'none', borderRadius: 20, cursor: 'pointer' }}>Gönder</button>
-        <button onClick={startListening} style={{ backgroundColor: '#198754', color: '#fff', padding: '10px 14px', border: 'none', borderRadius: 20, cursor: 'pointer' }}>🎙</button>
+        <button onClick={startListening} style={{ backgroundColor: '#ffc107', color: '#000', padding: '10px 14px', border: 'none', borderRadius: 20, cursor: 'pointer' }}>🎤 Konuş</button>
       </div>
     </div>
   );
