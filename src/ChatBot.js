@@ -1,7 +1,7 @@
 // EvciAI - Firebase Google Login Entegreli Mobil Sohbet Uygulaması
 import React, { useState, useRef } from 'react';
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA-y75uUn5dTPoTzSGar1NHRK9YaEZMDfU",
@@ -87,6 +87,10 @@ const EvciAI = () => {
     }
   };
 
+  const logout = () => {
+    signOut(auth).then(() => setUser(null));
+  };
+
   const themeStyles = {
     backgroundColor: darkMode ? '#1e1e1e' : '#f7f9fc',
     color: darkMode ? '#f7f9fc' : '#1e1e1e',
@@ -110,12 +114,18 @@ const EvciAI = () => {
   return (
     <div style={themeStyles}>
       <header style={{ padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2 style={{ margin: 0, fontSize: 20 }}>🤖 EvciAI</h2>
-        <button
-          onClick={() => setDarkMode(!darkMode)}
-          style={{ background: 'transparent', border: 'none', fontSize: 16, cursor: 'pointer', color: darkMode ? '#fff' : '#333' }}>
-          {darkMode ? '☀️' : '🌙'}
-        </button>
+        <div>
+          <h2 style={{ margin: 0, fontSize: 20 }}>🤖 EvciAI</h2>
+          <p style={{ margin: 0, fontSize: 14 }}>Hoş geldin, {user.displayName?.split(' ')[0]} 👋</p>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button onClick={logout} style={{ padding: '6px 12px', fontSize: 14, backgroundColor: '#dc3545', color: '#fff', border: 'none', borderRadius: 8 }}>Çıkış Yap</button>
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            style={{ background: 'transparent', border: 'none', fontSize: 16, cursor: 'pointer', color: darkMode ? '#fff' : '#333' }}>
+            {darkMode ? '☀️' : '🌙'}
+          </button>
+        </div>
       </header>
 
       <main style={{ flexGrow: 1, padding: '12px 16px', overflowY: 'auto' }}>
