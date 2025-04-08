@@ -1,5 +1,5 @@
-// EvciAI - Sesli ve mobil uyumlu yapay zeka destekli sohbet (OpenAI GPT-3.5 ile)
-import React, { useState, useRef, useEffect } from 'react';
+// EvciAI - Mobil uyumlu yapay zeka destekli sohbet (OpenAI GPT-3.5 ile)
+import React, { useState, useRef } from 'react';
 
 const EvciAI = () => {
   const [messages, setMessages] = useState([]);
@@ -10,12 +10,10 @@ const EvciAI = () => {
 
   const handleSend = async () => {
     if (!input.trim()) return;
-
     const userMessage = { sender: 'user', text: input };
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setLoading(true);
-
     try {
       const botMessage = await fetchOpenAIResponse(input);
       setMessages((prev) => [...prev, { sender: 'bot', text: botMessage }]);
@@ -28,7 +26,6 @@ const EvciAI = () => {
 
   const fetchOpenAIResponse = async (userInput) => {
     const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
-
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -43,7 +40,6 @@ const EvciAI = () => {
         ]
       })
     });
-
     const data = await response.json();
     if (data.error) throw new Error(data.error.message);
     if (!data.choices || !data.choices[0]) throw new Error("Geçerli bir yanıt alınamadı.");
@@ -53,7 +49,6 @@ const EvciAI = () => {
   const startListening = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) return alert("Tarayıcınız sesli komutları desteklemiyor.");
-
     if (!recognitionRef.current) {
       recognitionRef.current = new SpeechRecognition();
       recognitionRef.current.lang = 'tr-TR';
@@ -68,76 +63,59 @@ const EvciAI = () => {
 
   const themeStyles = {
     backgroundColor: darkMode ? '#1e1e1e' : '#f7f9fc',
-    color: darkMode ? '#f7f9fc' : '#1e1e1e'
-  };
-
-  const chatBoxStyles = {
-    backgroundColor: darkMode ? '#2c2c2c' : '#fff',
-    border: darkMode ? '1px solid #444' : '1px solid #ddd',
-    boxShadow: darkMode ? '0 0 10px rgba(255,255,255,0.1)' : '0 0 10px rgba(0,0,0,0.05)'
+    color: darkMode ? '#f7f9fc' : '#1e1e1e',
+    minHeight: '100vh',
+    display: 'flex',
+    flexDirection: 'column',
+    fontFamily: 'Arial, sans-serif'
   };
 
   return (
-    <div style={{
-      width: '100%',
-      maxWidth: 700,
-      margin: 'auto',
-      padding: 16,
-      fontFamily: 'Arial, sans-serif',
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'space-between',
-      ...themeStyles
-    }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-        <h2 style={{ margin: 0 }}>🤖 EvciAI</h2>
+    <div style={themeStyles}>
+      <header style={{ padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h2 style={{ margin: 0, fontSize: 20 }}>🤖 EvciAI</h2>
         <button
-          onClick={() => setDarkMode((prev) => !prev)}
-          style={{ background: darkMode ? '#f0f0f0' : '#1e1e1e', color: darkMode ? '#000' : '#fff', padding: '6px 12px', borderRadius: 20, border: 'none', cursor: 'pointer' }}>
-          {darkMode ? '☀️ Aydınlık' : '🌙 Karanlık'}
+          onClick={() => setDarkMode(!darkMode)}
+          style={{ background: 'transparent', border: 'none', fontSize: 16, cursor: 'pointer', color: darkMode ? '#fff' : '#333' }}>
+          {darkMode ? '☀️' : '🌙'}
         </button>
-      </div>
+      </header>
 
-      <div style={{ borderRadius: 12, padding: 16, flexGrow: 1, overflowY: 'auto', ...chatBoxStyles }}>
+      <main style={{ flexGrow: 1, padding: '12px 16px', overflowY: 'auto' }}>
         {messages.map((msg, index) => (
-          <div key={index} style={{ textAlign: msg.sender === 'user' ? 'right' : 'left', margin: '10px 0' }}>
+          <div key={index} style={{ textAlign: msg.sender === 'user' ? 'right' : 'left', margin: '8px 0' }}>
             <span style={{
-              padding: '10px 14px',
-              background: msg.sender === 'user'
-                ? darkMode ? '#3d9970' : '#d1e7dd'
-                : darkMode ? '#444' : '#f0f0f0',
-              borderRadius: 20,
               display: 'inline-block',
-              maxWidth: '80%',
-              color: darkMode ? '#fff' : '#333'
+              padding: '10px 14px',
+              borderRadius: 16,
+              backgroundColor: msg.sender === 'user' ? (darkMode ? '#4caf50' : '#d1e7dd') : (darkMode ? '#444' : '#eee'),
+              color: darkMode ? '#fff' : '#333',
+              maxWidth: '80%'
             }}>{msg.text}</span>
           </div>
         ))}
-        {loading && <div style={{ textAlign: 'left', color: darkMode ? '#aaa' : '#666', fontStyle: 'italic' }}>Yazıyor...</div>}
-      </div>
+        {loading && <div style={{ fontStyle: 'italic', color: darkMode ? '#aaa' : '#666' }}>Yazıyor...</div>}
+      </main>
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 16 }}>
+      <footer style={{ display: 'flex', gap: 8, padding: '12px 16px', borderTop: '1px solid #ccc' }}>
         <input
-          type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-          placeholder="Bir şeyler yaz veya konuş..."
+          placeholder="Yaz veya konuş..."
           style={{
             flex: 1,
-            padding: 12,
-            borderRadius: 20,
+            padding: '10px 14px',
+            borderRadius: 16,
             border: '1px solid #ccc',
-            outline: 'none',
             fontSize: 16,
             backgroundColor: darkMode ? '#2c2c2c' : '#fff',
             color: darkMode ? '#fff' : '#000'
           }}
         />
-        <button onClick={handleSend} style={{ backgroundColor: '#0d6efd', color: '#fff', padding: '10px 18px', border: 'none', borderRadius: 20, cursor: 'pointer' }}>Gönder</button>
-        <button onClick={startListening} style={{ backgroundColor: '#ffc107', color: '#000', padding: '10px 14px', border: 'none', borderRadius: 20, cursor: 'pointer' }}>🎤 Konuş</button>
-      </div>
+        <button onClick={handleSend} style={{ padding: '10px 16px', backgroundColor: '#0d6efd', color: '#fff', border: 'none', borderRadius: 16, fontWeight: 'bold' }}>Gönder</button>
+        <button onClick={startListening} style={{ padding: '10px 16px', backgroundColor: '#ffc107', color: '#000', border: 'none', borderRadius: 16 }}>🎤</button>
+      </footer>
     </div>
   );
 };
